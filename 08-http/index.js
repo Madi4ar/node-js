@@ -1,50 +1,32 @@
 const http = require("http");
+const {
+  handleNotFound,
+  getHTML,
+  getJSON,
+  getText,
+  postComment,
+} = require("./handlers");
 
 const PORT = 5000;
 
-const comments = [
-  {
-    id: 100,
-    title: "Abai zholy",
-    author: "Mukhtar Auezov",
-  },
-  {
-    id: 200,
-    title: "Kokserek",
-    author: "Mukhtar Auezov",
-  },
-  {
-    id: 300,
-    title: "Kargyn",
-    author: "Mukhtar Auezov",
-  },
-];
-
 const server = http.createServer((req, res) => {
-  if (req.url === "/http") {
-    res.statusCode = 200;
-    res.setHeader("Content-type", "text/html");
-    res.write("<html><body><div>");
-    res.write("<h1>Greetings from the http server</h1>");
-    res.write("</div></body></html>");
-    return res.end();
+  if (req.method === "GET" && req.url === "/http") {
+    return getHTML(req, res);
   }
 
-  if (req.url === "/text") {
-    res.statusCode = 200;
-    res.setHeader("Content-type", "text/plain");
-    return res.end("this is plain text");
+  if (req.method === "GET" && req.url === "/text") {
+    return getText(req, res);
   }
 
-  if (req.url === "/json") {
-    res.statusCode = 200;
-    res.setHeader("Content-type", "application/json");
-    return res.end(JSON.stringify(comments));
+  if (req.method === "GET" && req.url === "/json") {
+    return getJSON(req, res);
   }
 
-  res.statusCode = 404;
-  res.setHeader("Content-type", "text/plain");
-  return res.end("Page not found");
+  if (req.method === "POST" && req.url === "/json") {
+    return postComment(req, res);
+  }
+
+  return handleNotFound(req, res);
 });
 
 server.listen(PORT, () => {
